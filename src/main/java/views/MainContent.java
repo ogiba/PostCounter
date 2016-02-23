@@ -19,15 +19,16 @@ public class MainContent extends JFrame {
     private JTabbedPane tabbedPane1;
     private JPanel rootPanel;
     private JTable table1;
+    private JButton FBLoginButton;
 
-    private int counter=0;
+    private int counter = 0;
 
-    public MainContent(){
+    public MainContent() {
         super("hello");
 
         setFrameParameters();
 
-        String[] headers = new String[]{"Counter","Content"};
+        String[] headers = new String[]{"Counter", "Content"};
 
         DefaultTableModel dtm = new DefaultTableModel();
 
@@ -40,23 +41,41 @@ public class MainContent extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 counter++;
-                dtm.addRow(new Object[]{counter,"bo tak: "+counter});
-
 
                 String a = client.get("/api");
 
                 JsonParser parser = new JsonParser();
-                JsonArray jo = parser.parse(a).getAsJsonArray();
+                JsonArray ja = parser.parse(a).getAsJsonArray();
 
+                for (int i = 0; i < ja.size(); i++) {
+                    JsonObject jo = ja.get(i).getAsJsonObject();
+
+                    dtm.addRow(new Object[]{jo.get("id"), jo.get("name")});
+                }
+
+            }
+        });
+
+        FBLoginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Fb login works fine");
+
+                FacebookLoginDialog fblogin = new FacebookLoginDialog();
+
+                fblogin.setSize(300,300);
+                fblogin.setLocationRelativeTo(null);
+                fblogin.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+                fblogin.setVisible(true);
             }
         });
     }
 
-    public void setFrameParameters(){
+    public void setFrameParameters() {
         setContentPane(rootPanel);
         pack();
 
-        setSize(500,300);
+        setSize(500, 300);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
